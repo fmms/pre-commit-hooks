@@ -13,11 +13,20 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     for filename in args.filenames:
         with open(filename, 'rb') as f_b:
-            bts = f_b.read(3)
+            bts2 = f_b.read(2)
+            bts3 = f_b.read(3)
 
-        if bts == b'\xef\xbb\xbf':
+        if bts3 == b'\xef\xbb\xbf':
             with open(filename, newline='', encoding='utf-8-sig') as f:
                 contents = f.read()
+            with open(filename, 'w', newline='', encoding='utf-8') as f:
+                f.write(contents)
+        if bts2 == b'\xff\xfe':
+            data = open(filename, mode="rb").read()
+            try:
+                contents = data.decode("utf-16")
+            except UnicodeDecodeError:
+                contents = data[:-1].decode("utf-16")
             with open(filename, 'w', newline='', encoding='utf-8') as f:
                 f.write(contents)
 
